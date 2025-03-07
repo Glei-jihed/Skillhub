@@ -45,7 +45,6 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
@@ -58,7 +57,6 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 }
             }
 
-
             if (chatViewModel.isLoading.value) {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -68,7 +66,6 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 }
             }
 
-
             if (chatViewModel.errorMessage.value.isNotEmpty()) {
                 Text(
                     text = chatViewModel.errorMessage.value,
@@ -76,7 +73,6 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                     modifier = Modifier.padding(8.dp)
                 )
             }
-
 
             Row(
                 modifier = Modifier
