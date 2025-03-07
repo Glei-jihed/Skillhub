@@ -29,12 +29,15 @@ class ChatViewModel(
 
         messages.add(Message(userMessage, isSent = true))
 
+
+        val type = if (messages.size == 1) "start" else ""
+
         viewModelScope.launch {
             isLoading.value = true
             errorMessage.value = ""
             try {
 
-                val response = repository.sendMessage(userMessage)
+                val response = repository.sendMessage(userMessage, type)
 
                 messages.add(Message(response.response, isSent = false))
             } catch (e: Exception) {
