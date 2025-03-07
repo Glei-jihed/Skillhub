@@ -10,52 +10,100 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.skillhub.model.Message
 import edu.skillhub.viewmodel.ChatViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
     var textState by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Zone d'affichage des messages
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            reverseLayout = true,
-            contentPadding = PaddingValues(vertical = 8.dp)
-        ) {
-            items(chatViewModel.messages.reversed()) { message ->
-                ChatMessageItem(message)
-            }
-        }
-        // Zone de saisie et bouton d'envoi
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextField(
-                value = textState,
-                onValueChange = { textState = it },
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("Votre message") }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "SkillHub",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF1976D2) // Bleu foncé
+                )
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(
-                onClick = {
-                    if (textState.isNotBlank()) {
-                        // Utilisation du ViewModel pour envoyer le message
-                        chatViewModel.sendMessage(textState)
-                        textState = ""
-                    }
-                }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            // Zone d'affichage des messages
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                reverseLayout = true,
+                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 8.dp)
             ) {
-                Text("Envoyer")
+                items(chatViewModel.messages.reversed()) { message ->
+                    ChatMessageItem(message)
+                }
+            }
+
+            // Indicateur de chargement
+            if (chatViewModel.isLoading.value) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                }
+            }
+
+            // Affichage d'un message d'erreur s'il existe
+            if (chatViewModel.errorMessage.value.isNotEmpty()) {
+                Text(
+                    text = chatViewModel.errorMessage.value,
+                    color = Color.Red,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+
+            // Zone de saisie et bouton d'envoi
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextField(
+                    value = textState,
+                    onValueChange = { textState = it },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Votre message") }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = {
+                        if (textState.isNotBlank()) {
+                            chatViewModel.sendMessage(textState)
+                            textState = ""
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF1976D2) // Même bleu foncé
+                    )
+                ) {
+                    Text("Envoyer", color = Color.White)
+                }
             }
         }
     }
@@ -63,9 +111,10 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
 
 @Composable
 fun ChatMessageItem(message: Message) {
-    // Utilise Alignment.CenterEnd ou Alignment.CenterStart pour un alignement complet (horizontal et vertical)
     val alignment = if (message.isSent) Alignment.CenterEnd else Alignment.CenterStart
-    val backgroundColor = if (message.isSent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+    // Bleu ciel pour l'utilisateur, gris clair pour le chatbot
+    val backgroundColor = if (message.isSent) Color(0xFF87CEEB) else Color(0xFFD3D3D3)
+    val textColor = Color.Black
 
     Box(
         modifier = Modifier
@@ -78,7 +127,13 @@ fun ChatMessageItem(message: Message) {
             modifier = Modifier
                 .background(color = backgroundColor, shape = RoundedCornerShape(8.dp))
                 .padding(12.dp),
-            color = Color.White
+            color = textColor
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatScreenPreview() {
+    ChatScreen()
 }
