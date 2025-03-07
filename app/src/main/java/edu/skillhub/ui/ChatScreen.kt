@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +24,10 @@ import edu.skillhub.viewmodel.ChatViewModel
 @Composable
 fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
     var textState by remember { mutableStateOf("") }
+    var selectedType by remember { mutableStateOf("none") }
+    var expanded by remember { mutableStateOf(false) }
+
+    val options = listOf("sorten", "none")
 
     Scaffold(
         topBar = {
@@ -45,6 +51,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
@@ -54,6 +61,39 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
             ) {
                 items(chatViewModel.messages.reversed()) { message ->
                     ChatMessageItem(message)
+                }
+            }
+
+            if (chatViewModel.messages.isNotEmpty()) {
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = selectedType,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Type") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        options.forEach { option ->
+                            DropdownMenuItem(
+                                text = { Text(option) },
+                                onClick = {
+                                    selectedType = option
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
 
@@ -90,7 +130,14 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 Button(
                     onClick = {
                         if (textState.isNotBlank()) {
-                            chatViewModel.sendMessage(textState)
+
+                            val typeToSend = if (chatViewModel.messages.isEmpty()) {
+                                "start"
+                            } else {
+
+                                if (selectedType == "none") "" else selectedType
+                            }
+                            chatViewModel.sendMessage(textState, typeToSend)
                             textState = ""
                         }
                     },
@@ -108,6 +155,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
 @Composable
 fun ChatMessageItem(message: Message) {
     val alignment = if (message.isSent) Alignment.CenterEnd else Alignment.CenterStart
+
     val backgroundColor = if (message.isSent) Color(0xFF87CEEB) else Color(0xFFD3D3D3)
     val textColor = Color.Black
 

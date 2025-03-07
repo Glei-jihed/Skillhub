@@ -25,23 +25,18 @@ class ChatViewModel(
         private set
 
 
-    fun sendMessage(userMessage: String) {
+    fun sendMessage(userMessage: String, type: String) {
 
         messages.add(Message(userMessage, isSent = true))
-
-
-        val type = if (messages.size == 1) "start" else ""
 
         viewModelScope.launch {
             isLoading.value = true
             errorMessage.value = ""
             try {
-
                 val response = repository.sendMessage(userMessage, type)
 
                 messages.add(Message(response.response, isSent = false))
             } catch (e: Exception) {
-
                 messages.add(Message("Erreur lors de l'envoi du message", isSent = false))
                 errorMessage.value = e.message ?: "Erreur inconnue"
             } finally {
