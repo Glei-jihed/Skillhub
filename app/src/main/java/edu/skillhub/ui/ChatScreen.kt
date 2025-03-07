@@ -11,16 +11,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.skillhub.model.Message
+import edu.skillhub.viewmodel.ChatViewModel
 
 @Composable
-fun ChatScreen() {
-
-    val messages = remember { mutableStateListOf<Message>() }
+fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
     var textState by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
-
+        // Zone d'affichage des messages
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -28,12 +28,11 @@ fun ChatScreen() {
             reverseLayout = true,
             contentPadding = PaddingValues(vertical = 8.dp)
         ) {
-
-            items(messages.reversed()) { message ->
+            items(chatViewModel.messages.reversed()) { message ->
                 ChatMessageItem(message)
             }
         }
-
+        // Zone de saisie et bouton d'envoi
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -50,10 +49,9 @@ fun ChatScreen() {
             Button(
                 onClick = {
                     if (textState.isNotBlank()) {
-
-                        messages.add(Message(textState, isSent = true))
+                        // Utilisation du ViewModel pour envoyer le message
+                        chatViewModel.sendMessage(textState)
                         textState = ""
-                        // TODO : Intégrer Retrofit pour envoyer le message et récupérer la réponse du chatbot
                     }
                 }
             ) {
@@ -65,7 +63,7 @@ fun ChatScreen() {
 
 @Composable
 fun ChatMessageItem(message: Message) {
-
+    // Utilise Alignment.CenterEnd ou Alignment.CenterStart pour un alignement complet (horizontal et vertical)
     val alignment = if (message.isSent) Alignment.CenterEnd else Alignment.CenterStart
     val backgroundColor = if (message.isSent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
 
