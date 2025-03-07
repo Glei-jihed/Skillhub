@@ -35,7 +35,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1976D2) // Bleu foncé
+                    containerColor = Color(0xFF1976D2)
                 )
             )
         }
@@ -45,7 +45,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Zone d'affichage des messages
+
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
@@ -58,7 +58,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 }
             }
 
-            // Indicateur de chargement
+
             if (chatViewModel.isLoading.value) {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -68,7 +68,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 }
             }
 
-            // Affichage d'un message d'erreur s'il existe
+
             if (chatViewModel.errorMessage.value.isNotEmpty()) {
                 Text(
                     text = chatViewModel.errorMessage.value,
@@ -77,7 +77,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 )
             }
 
-            // Zone de saisie et bouton d'envoi
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,7 +99,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF1976D2) // Même bleu foncé
+                        containerColor = Color(0xFF1976D2)
                     )
                 ) {
                     Text("Envoyer", color = Color.White)
@@ -112,7 +112,6 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
 @Composable
 fun ChatMessageItem(message: Message) {
     val alignment = if (message.isSent) Alignment.CenterEnd else Alignment.CenterStart
-    // Bleu ciel pour l'utilisateur, gris clair pour le chatbot
     val backgroundColor = if (message.isSent) Color(0xFF87CEEB) else Color(0xFFD3D3D3)
     val textColor = Color.Black
 
