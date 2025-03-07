@@ -26,7 +26,6 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
     var textState by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("none") }
     var expanded by remember { mutableStateOf(false) }
-
     val options = listOf("sorten", "none")
 
     Scaffold(
@@ -51,7 +50,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-
+            // Affichage des messages
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
@@ -63,6 +62,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                     ChatMessageItem(message)
                 }
             }
+
 
             if (chatViewModel.messages.isNotEmpty()) {
                 ExposedDropdownMenuBox(
@@ -97,6 +97,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 }
             }
 
+
             if (chatViewModel.isLoading.value) {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -106,6 +107,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 }
             }
 
+
             if (chatViewModel.errorMessage.value.isNotEmpty()) {
                 Text(
                     text = chatViewModel.errorMessage.value,
@@ -113,6 +115,7 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                     modifier = Modifier.padding(8.dp)
                 )
             }
+
 
             Row(
                 modifier = Modifier
@@ -130,11 +133,11 @@ fun ChatScreen(chatViewModel: ChatViewModel = viewModel()) {
                 Button(
                     onClick = {
                         if (textState.isNotBlank()) {
-
+                            // Si aucun message n'a été envoyé, forcer "start"
                             val typeToSend = if (chatViewModel.messages.isEmpty()) {
                                 "start"
                             } else {
-
+                                // "none" est converti en chaîne vide
                                 if (selectedType == "none") "" else selectedType
                             }
                             chatViewModel.sendMessage(textState, typeToSend)

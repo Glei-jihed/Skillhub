@@ -1,17 +1,10 @@
 package edu.skillhub.network
 
-
-data class Summary(
-    val summary: String
-)
-
 data class ChatRequest(
     val message: String,
-    val type: String,
-    val summary: Summary
+    val type: String
 )
 
-
 data class ChatResponse(
-    val response: String
+    val summary: String
 )
